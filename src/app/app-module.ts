@@ -11,6 +11,7 @@ import { TopNavbar } from './components/top-navbar/top-navbar';
 import { AnalyticsTable } from './components/analytics-table/analytics-table';
 import { MaterialModule } from './modules/material-module';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { FormsModule } from '@angular/forms';
     BrowserAnimationsModule,
     AppRoutingModule,
     MaterialModule,
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
   providers: [
     provideBrowserGlobalErrorListeners()
