@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Department } from '../../interfaces/department';
 import { DepartmentsService } from '../../services/departments';
@@ -6,6 +6,7 @@ import { FormControl, ValidatorFn, AbstractControl } from '@angular/forms';
 import { Employee } from '../../interfaces/employee';
 import { EmployeeService } from '../../services/employee';
 import { Observable } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-timesheet',
@@ -26,14 +27,24 @@ export class TimesheetComponent implements OnInit {
     private departmentsService: DepartmentsService,
     private employeeService: EmployeeService,
     private router: Router,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
     this.$departments = this.departmentsService.getDepartments();
 
-    this.$departments.subscribe(x => {
-        this.department = x.find(dept => dept.id === this.route.snapshot.params['id'])
-    });
+    this.$departments.pipe(
+      switchMap(departments => {
+        this.department = departments.find(dept => dept.id === this.route.snapshot.params['id'])
+        console.log('Department:', this.department);
+        return this.employeeService.getEmployeeHoursByDepartment(this.department.id);
+      }),
+      tap(employees => {
+        console.log('Loaded employees:', employees);
+        this.employees = employees;
+        this.cdr.detectChanges();
+      })
+    ).subscribe();
   }
 
   addEmployee(): void {
