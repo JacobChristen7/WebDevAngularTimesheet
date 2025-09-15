@@ -47,4 +47,10 @@ export class EmployeeService {
         );
       })
     }
+
+    updateEmployeeHours(employee: Employee): any {
+      return runInInjectionContext(this.environmentInjector, () => {
+        this.db.collection('employee-hours').doc(employee.id).set(employee);
+      }
+      )}
 }
